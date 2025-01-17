@@ -1,0 +1,15 @@
+## Requirements
+
+To run this project, you need to have the following libraries installed:
+
+- pandas
+- numpy
+- scikit-learn
+- yfinance
+- tensorflow
+- matplotlib
+
+You can install the dependencies with:
+
+pip install pandas numpy scikit-learn yfinance tensorflow matplotlib
+
