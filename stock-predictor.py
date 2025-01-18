@@ -14,13 +14,7 @@ from typing import Tuple, List
 
 class StockPredictor:
     def __init__(self, symbol: str, prediction_days: int = 60):
-        """
-        Initialize the Stock Price Predictor.
-        
-        Args:
-            symbol (str): Stock symbol (e.g., 'AAPL' for Apple)
-            prediction_days (int): Number of days to use for prediction
-        """
+       
         self.symbol = symbol
         self.prediction_days = prediction_days
         self.scaler = MinMaxScaler()
@@ -34,16 +28,7 @@ class StockPredictor:
         )
 
     def fetch_data(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
-        """
-        Fetch historical stock data from Yahoo Finance.
         
-        Args:
-            start_date (str): Start date in 'YYYY-MM-DD' format
-            end_date (str): End date in 'YYYY-MM-DD' format
-            
-        Returns:
-            pd.DataFrame: Historical stock data
-        """
         try:
             if not start_date:
                 start_date = (datetime.now() - timedelta(days=365*2)).strftime('%Y-%m-%d')
@@ -58,15 +43,7 @@ class StockPredictor:
             raise
 
     def prepare_data(self, data: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Prepare data for LSTM model.
         
-        Args:
-            data (pd.DataFrame): Historical stock data
-            
-        Returns:
-            tuple: (X_train, X_test, y_train, y_test)
-        """
         # Extract closing prices and convert to numpy array
         scaled_data = self.scaler.fit_transform(data['Close'].values.reshape(-1, 1))
         
@@ -89,12 +66,7 @@ class StockPredictor:
         return X_train, X_test, y_train, y_test
 
     def build_model(self, input_shape: Tuple[int, int]) -> None:
-        """
-        Build and compile LSTM model.
         
-        Args:
-            input_shape (tuple): Shape of input data (prediction_days, 1)
-        """
         self.model = Sequential([
             LSTM(units=50, return_sequences=True, input_shape=input_shape),
             Dropout(0.2),
@@ -115,19 +87,7 @@ class StockPredictor:
     def train_model(self, X_train: np.ndarray, y_train: np.ndarray, 
                    epochs: int = 25, batch_size: int = 32,
                    validation_split: float = 0.1) -> tf.keras.callbacks.History:
-        """
-        Train the LSTM model.
         
-        Args:
-            X_train (np.ndarray): Training features
-            y_train (np.ndarray): Training targets
-            epochs (int): Number of training epochs
-            batch_size (int): Batch size for training
-            validation_split (float): Fraction of data to use for validation
-            
-        Returns:
-            History: Training history
-        """
         history = self.model.fit(
             X_train, y_train,
             epochs=epochs,
@@ -140,16 +100,7 @@ class StockPredictor:
         return history
 
     def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray) -> dict:
-        """
-        Evaluate model performance.
-        
-        Args:
-            X_test (np.ndarray): Test features
-            y_test (np.ndarray): Test targets
-            
-        Returns:
-            dict: Dictionary containing evaluation metrics
-        """
+       
         predictions = self.model.predict(X_test)
         
         # Inverse transform predictions and actual values
@@ -168,15 +119,7 @@ class StockPredictor:
         return metrics
 
     def predict_future(self, days: int = 30) -> List[float]:
-        """
-        Predict future stock prices.
-        
-        Args:
-            days (int): Number of days to predict into the future
-            
-        Returns:
-            list: Predicted prices for the specified number of days
-        """
+       
         # Get the last 'prediction_days' of data
         data = yf.download(self.symbol, 
                           start=(datetime.now() - timedelta(days=self.prediction_days+days)).strftime('%Y-%m-%d'),
@@ -208,14 +151,7 @@ class StockPredictor:
 
     def plot_predictions(self, actual_prices: np.ndarray, predicted_prices: np.ndarray,
                         title: str = "Stock Price Prediction") -> None:
-        """
-        Plot actual vs predicted prices.
         
-        Args:
-            actual_prices (np.ndarray): Array of actual prices
-            predicted_prices (np.ndarray): Array of predicted prices
-            title (str): Plot title
-        """
         plt.figure(figsize=(12, 6))
         plt.plot(actual_prices, label='Actual Prices')
         plt.plot(predicted_prices, label='Predicted Prices')
